@@ -88,7 +88,7 @@ vercel
 
 * `api/server.ts` - Main API handler for Vercel
 * `lib/mcp-api-handler.ts` - MCP server implementation
-* `dev-server.ts` - Local development server
+* `api/index.ts` - Server entrypoint
 * `test-client.ts` - Test client for interacting with the MCP server
 * `tests/` - Test files
 
