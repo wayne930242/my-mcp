@@ -7,6 +7,7 @@ import { Socket } from "net";
 import { Readable } from "stream";
 import { ServerOptions } from "@modelcontextprotocol/sdk/server/index.js";
 import vercelJson from "../vercel.json";
+import { REDIS_URL, KV_URL } from "./env";
 
 interface SerializedRequest {
   requestId: string;
@@ -22,7 +23,7 @@ export function initializeMcpApiHandler(
 ) {
   const maxDuration =
     vercelJson?.functions?.["api/server.ts"]?.maxDuration || 800;
-  const redisUrl = process.env.REDIS_URL || process.env.KV_URL;
+  const redisUrl = REDIS_URL || KV_URL;
   if (!redisUrl) {
     throw new Error("REDIS_URL environment variable is not set");
   }
@@ -234,6 +235,7 @@ interface FakeIncomingMessageOptions {
 }
 
 // Create a fake IncomingMessage
+// Create a fake IncomingMessage
 function createFakeIncomingMessage(
   options: FakeIncomingMessageOptions = {}
 ): IncomingMessage {
@@ -269,10 +271,19 @@ function createFakeIncomingMessage(
   req.url = url;
   req.headers = headers;
 
-  // Copy over the stream methods
+  // Copy over the stream methods but make sure they return the correct type
   req.push = readable.push.bind(readable);
   req.read = readable.read.bind(readable);
-  req.on = readable.on.bind(readable);
+
+  // Fix the type error by using a custom implementation
+  req.on = function (
+    event: string,
+    listener: (...args: any[]) => void
+  ): IncomingMessage {
+    readable.on(event, listener);
+    return req;
+  } as any;
+
   req.pipe = readable.pipe.bind(readable);
 
   return req;

@@ -1,20 +1,110 @@
-# Run an MCP Server on Vercel
+# MCP on Vercel
 
-## Usage
+This project implements a Model Context Protocol (MCP) server on Vercel using Redis for message passing.
 
-Update `api/server.ts` with your tools, prompts, and resources following the [MCP TypeScript SDK documentation](https://github.com/modelcontextprotocol/typescript-sdk/tree/main?tab=readme-ov-file#server).
+## Prerequisites
 
-## Notes for running on Vercel
+* Node.js 18+
+* pnpm
+* Redis server (local or remote)
 
-- Requires a Redis attached to the project under `process.env.REDIS_URL`
-- Make sure you have [Fluid compute](https://vercel.com/docs/functions/fluid-compute) enabled for efficient execution
-- After enabling Fluid compute, open `vercel.json` and adjust max duration to 800 if you using a Vercel Pro or Enterprise account
-- [Deploy the MCP template](https://vercel.com/templates/other/model-context-protocol-mcp-with-vercel-functions)
+## Getting Started
 
-## Sample Client
+1. Install dependencies:
 
-`script/test-client.mjs` contains a sample client to try invocations.
-
-```sh
-node scripts/test-client.mjs https://mcp-on-vercel.vercel.app
+```bash
+pnpm install
 ```
+
+2. Set up environment variables:
+
+Copy the example environment file to create your own:
+
+```bash
+cp .env.example .env
+```
+
+Then edit the `.env` file with your configuration:
+
+```
+REDIS_URL=redis://localhost:6379
+PORT=3000
+DEBUG=false
+```
+
+3. Start the development server:
+
+```bash
+pnpm dev
+```
+
+## Testing
+
+### Running Tests
+
+```bash
+pnpm test
+```
+
+### Manual Testing
+
+1. Start the development server:
+
+```bash
+pnpm dev
+```
+
+2. In another terminal, run the test client:
+
+```bash
+pnpm exec ts-node test-client.ts
+```
+
+## Deploying to Vercel
+
+1. Install Vercel CLI:
+
+```bash
+npm install -g vercel
+```
+
+2. Login to Vercel:
+
+```bash
+vercel login
+```
+
+3. Deploy:
+
+```bash
+vercel
+```
+
+4. Set up Redis:
+   * Create a Redis instance (e.g., Upstash, Redis Labs)
+   * Add the Redis URL to your Vercel project environment variables
+
+## Project Structure
+
+* `api/server.ts` - Main API handler for Vercel
+* `lib/mcp-api-handler.ts` - MCP server implementation
+* `dev-server.ts` - Local development server
+* `test-client.ts` - Test client for interacting with the MCP server
+* `tests/` - Test files
+
+## Adding New Tools
+
+Edit `api/server.ts` to add new tools to your MCP server:
+
+```typescript
+server.tool("myTool", { param: z.string() }, async ({ param }) => ({
+  content: [{ type: "text", text: `Result: ${param}` }],
+}));
+```
+
+## Debugging
+
+To view logs in development:
+
+* Local: Check your terminal output
+* Vercel: Use `vercel logs` command or the Vercel dashboard
