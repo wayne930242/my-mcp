@@ -2,7 +2,7 @@
   "name": "my-mcp-on-vercel",
   "version": "0.0.1",
   "description": "My Custom Protocol server on Vercel",
-  "entrypoint": "api/index.ts",
+  "entrypoint": "public/index.html",
   "scripts": {
     "dev": "ts-node api/index.ts",
     "build": "tsc",
